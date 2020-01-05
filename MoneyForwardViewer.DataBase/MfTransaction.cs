@@ -3,6 +3,14 @@ using System;
 namespace MoneyForwardViewer.DataBase {
 	public class MfTransaction {
 		/// <summary>
+		/// Transaction ID
+		/// </summary>
+		public string TransactionId {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// 計算対象
 		/// </summary>
 		public bool IsCalculateTarget {
