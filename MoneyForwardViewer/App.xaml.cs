@@ -1,16 +1,30 @@
 using System.Windows;
 
-using MoneyForwardViewer.Scraper;
+using Microsoft.Data.Sqlite;
+
+using MoneyForwardViewer.DataBase;
+using MoneyForwardViewer.Views;
+
+using Prism.Ioc;
+using Prism.Unity;
 
 namespace MoneyForwardViewer {
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
 	public partial class App {
-		protected override void OnStartup(StartupEventArgs e) {
-			var mfs = new MoneyForwardScraper("id", "pw");
-			var task = mfs.GetTransactions();
-			base.OnStartup(e);
+		protected override Window CreateShell() {
+			return this.Container.Resolve<MainWindow>();
+		}
+
+		protected override void RegisterTypes(IContainerRegistry containerRegistry) {
+			// DataBase
+			var sb = new SqliteConnectionStringBuilder {
+				DataSource = "./database.db"
+			};
+			var dbContext = new MoneyForwardViewerDbContext(new SqliteConnection(sb.ConnectionString));
+			dbContext.Database.EnsureCreated();
+			containerRegistry.RegisterInstance(dbContext);
 		}
 	}
 }

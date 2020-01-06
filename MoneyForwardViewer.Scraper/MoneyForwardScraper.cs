@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack.CssSelectors.NetCore;
 
 using MoneyForwardViewer.DataBase;
+using MoneyForwardViewer.DataBase.Tables;
 
 namespace MoneyForwardViewer.Scraper {
 	public class MoneyForwardScraper {

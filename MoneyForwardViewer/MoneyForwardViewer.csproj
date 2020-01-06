@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoneyForwardViewer.Scraper\MoneyForwardViewer.Scraper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Prism.Unity" />
+    <PackageReference Include="ReactiveProperty" />
   </ItemGroup>
 
 </Project>
