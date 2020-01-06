@@ -1,6 +1,6 @@
 using System;
 
-namespace MoneyForwardViewer.DataBase {
+namespace MoneyForwardViewer.DataBase.Tables {
 	public class MfTransaction {
 		/// <summary>
 		/// Transaction ID
