@@ -53,7 +53,7 @@ namespace MoneyForwardViewer.Scraper {
 						.Select(tdList => new MfTransaction {
 							TransactionId =
 								tdList[0].QuerySelector("input#user_asset_act_id").GetAttributeValue("value", null),
-							IsCalculateTarget = tdList[0].QuerySelector("i") != null,
+							IsCalculateTarget = tdList[0].QuerySelector("i.icon-check") != null,
 							Date = new DateTime(year, month, int.Parse(tdList[1].InnerText.Trim().Substring(3, 2))),
 							Content = tdList[2].InnerText.Trim(),
 							Amount = int.Parse(tdList[3].QuerySelector("span").InnerText.Trim().Replace(",", "")),
