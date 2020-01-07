@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using MoneyForwardViewer.DataBase.Tables;
 using MoneyForwardViewer.Models;
 
 using Prism.Mvvm;
@@ -15,15 +17,27 @@ namespace MoneyForwardViewer.ViewModels {
 			get;
 		}
 
+		public IReadOnlyReactiveProperty<IEnumerable<MfTransaction>> Transactions {
+			get;
+		}
+
 		public ReactiveCommand ImportCommand {
+			get;
+		} = new ReactiveCommand();
+
+		public ReactiveCommand LoadCommand {
 			get;
 		} = new ReactiveCommand();
 
 		public MainWindowViewModel(MoneyForward moneyForward) {
 			this.Id = moneyForward.Id.ToReactivePropertyAsSynchronized(x => x.Value);
 			this.Password = moneyForward.Password.ToReactivePropertyAsSynchronized(x => x.Value);
+			this.Transactions = moneyForward.Transactions.ToReadOnlyReactivePropertySlim();
 			this.ImportCommand.Subscribe(async () => {
 				await moneyForward.ImportFromMoneyForward();
+			});
+			this.LoadCommand.Subscribe(async () => {
+				await moneyForward.LoadTransactions();
 			});
 		}
 	}

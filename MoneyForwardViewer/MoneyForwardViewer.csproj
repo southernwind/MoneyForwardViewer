@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MoneyForwardViewer.Composition\MoneyForwardViewer.Composition.csproj" />
     <ProjectReference Include="..\MoneyForwardViewer.Scraper\MoneyForwardViewer.Scraper.csproj" />
   </ItemGroup>
 

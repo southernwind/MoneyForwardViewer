@@ -16,7 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyForwardViewer.DataBase", "MoneyForwardViewer.DataBase\MoneyForwardViewer.DataBase.csproj", "{77094612-6456-480D-9A4C-D34FAD0BD501}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyForwardViewer.Scraper", "MoneyForwardViewer.Scraper\MoneyForwardViewer.Scraper.csproj", "{C5219B3F-45EE-4DFA-A63A-14018BFA4885}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyForwardViewer.Scraper", "MoneyForwardViewer.Scraper\MoneyForwardViewer.Scraper.csproj", "{C5219B3F-45EE-4DFA-A63A-14018BFA4885}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyForwardViewer.Composition", "MoneyForwardViewer.Composition\MoneyForwardViewer.Composition.csproj", "{D82255B0-F148-47E2-AE78-16BA8E6F6E7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{C5219B3F-45EE-4DFA-A63A-14018BFA4885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5219B3F-45EE-4DFA-A63A-14018BFA4885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5219B3F-45EE-4DFA-A63A-14018BFA4885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D82255B0-F148-47E2-AE78-16BA8E6F6E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D82255B0-F148-47E2-AE78-16BA8E6F6E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D82255B0-F148-47E2-AE78-16BA8E6F6E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D82255B0-F148-47E2-AE78-16BA8E6F6E7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

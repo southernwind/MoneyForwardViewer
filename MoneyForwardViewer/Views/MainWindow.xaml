@@ -3,6 +3,7 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:local="clr-namespace:MoneyForwardViewer.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
@@ -13,13 +14,17 @@
 	d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
+	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="Loaded">
+			<i:InvokeCommandAction Command="{Binding LoadCommand}" />
+		</i:EventTrigger>
+	</i:Interaction.Triggers>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<DockPanel>
+		<DockPanel Grid.Row="0">
 			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
 				<TextBlock VerticalAlignment="Center" Text="ID" />
 				<TextBox
@@ -38,5 +43,42 @@
 			</StackPanel>
 			<Grid />
 		</DockPanel>
+		<ListView Grid.Row="1" ItemsSource="{Binding Transactions.Value}">
+			<ListView.Resources>
+				<Style TargetType="ListViewItem">
+					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				</Style>
+			</ListView.Resources>
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="計算対象">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox
+									IsChecked="{Binding IsCalculateTarget}"
+									IsHitTestVisible="False"
+									IsTabStop="False" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn DisplayMemberBinding="{Binding Date, StringFormat=yyyy/MM/dd}" Header="日付" />
+					<GridViewColumn DisplayMemberBinding="{Binding Content}" Header="内容" />
+					<GridViewColumn Header="金額">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock
+									Foreground="{Binding Amount, Converter={StaticResource AmountToColorBrushConverter}}"
+									Text="{Binding Amount, StringFormat={}{0:C}, ConverterCulture=ja-JP}"
+									TextAlignment="Right" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn DisplayMemberBinding="{Binding Institution}" Header="保有金融機関" />
+					<GridViewColumn DisplayMemberBinding="{Binding LargeCategory}" Header="大項目" />
+					<GridViewColumn DisplayMemberBinding="{Binding MiddleCategory}" Header="中項目" />
+					<GridViewColumn DisplayMemberBinding="{Binding Memo}" Header="メモ" />
+				</GridView>
+			</ListView.View>
+		</ListView>
 	</Grid>
 </Window>
