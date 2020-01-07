@@ -6,6 +6,7 @@
 	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:local="clr-namespace:MoneyForwardViewer.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:oxy="http://oxyplot.org/wpf"
 	xmlns:prism="http://prismlibrary.com/"
 	xmlns:vm="clr-namespace:MoneyForwardViewer.ViewModels"
 	Title="MainWindow"
@@ -19,75 +20,84 @@
 			<i:InvokeCommandAction Command="{Binding LoadCommand}" />
 		</i:EventTrigger>
 	</i:Interaction.Triggers>
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
-		<DockPanel Grid.Row="0">
-			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-				<TextBlock VerticalAlignment="Center" Text="ID" />
-				<TextBox
-					Width="100"
-					Margin="5"
-					Text="{Binding Id.Value}" />
-				<TextBlock VerticalAlignment="Center" Text="Password" />
-				<TextBox
-					Width="100"
-					Margin="5"
-					Text="{Binding Password.Value}" />
-				<Button
-					Margin="5"
-					Command="{Binding ImportCommand}"
-					Content="取得実行" />
-			</StackPanel>
-			<Grid />
-		</DockPanel>
-		<ListView Grid.Row="1" ItemsSource="{Binding Transactions.Value}">
-			<ListView.Resources>
-				<Style TargetType="ListViewItem">
-					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-				</Style>
-			</ListView.Resources>
-			<ItemsControl.ItemContainerStyle>
-				<Style TargetType="ListViewItem">
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding IsCalculateTarget}" Value="False">
-							<Setter Property="Background" Value="DarkGray" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</ItemsControl.ItemContainerStyle>
-			<ListView.View>
-				<GridView>
-					<GridViewColumn Header="計算対象">
-						<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<CheckBox
-									IsChecked="{Binding IsCalculateTarget}"
-									IsHitTestVisible="False"
-									IsTabStop="False" />
-							</DataTemplate>
-						</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-					<GridViewColumn DisplayMemberBinding="{Binding Date, StringFormat=yyyy/MM/dd}" Header="日付" />
-					<GridViewColumn DisplayMemberBinding="{Binding Content}" Header="内容" />
-					<GridViewColumn Header="金額">
-						<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock
-									Foreground="{Binding Amount, Converter={StaticResource AmountToColorBrushConverter}}"
-									Text="{Binding Amount, StringFormat={}{0:C}, ConverterCulture=ja-JP}"
-									TextAlignment="Right" />
-							</DataTemplate>
-						</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-					<GridViewColumn DisplayMemberBinding="{Binding Institution}" Header="保有金融機関" />
-					<GridViewColumn DisplayMemberBinding="{Binding LargeCategory}" Header="大項目" />
-					<GridViewColumn DisplayMemberBinding="{Binding MiddleCategory}" Header="中項目" />
-					<GridViewColumn DisplayMemberBinding="{Binding Memo}" Header="メモ" />
-				</GridView>
-			</ListView.View>
-		</ListView>
-	</Grid>
+	<TabControl>
+		<TabItem Header="家計">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<DockPanel Grid.Row="0">
+					<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+						<TextBlock VerticalAlignment="Center" Text="ID" />
+						<TextBox
+							Width="100"
+							Margin="5"
+							Text="{Binding Id.Value}" />
+						<TextBlock VerticalAlignment="Center" Text="Password" />
+						<TextBox
+							Width="100"
+							Margin="5"
+							Text="{Binding Password.Value}" />
+						<Button
+							Margin="5"
+							Command="{Binding ImportCommand}"
+							Content="取得実行" />
+					</StackPanel>
+					<Grid />
+				</DockPanel>
+				<ListView Grid.Row="1" ItemsSource="{Binding Transactions.Value}">
+					<ListView.Resources>
+						<Style TargetType="ListViewItem">
+							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+						</Style>
+					</ListView.Resources>
+					<ItemsControl.ItemContainerStyle>
+						<Style TargetType="ListViewItem">
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding IsCalculateTarget}" Value="False">
+									<Setter Property="Background" Value="DarkGray" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</ItemsControl.ItemContainerStyle>
+					<ListView.View>
+						<GridView>
+							<GridViewColumn Header="計算対象">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<CheckBox
+											IsChecked="{Binding IsCalculateTarget}"
+											IsHitTestVisible="False"
+											IsTabStop="False" />
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn DisplayMemberBinding="{Binding Date, StringFormat=yyyy/MM/dd}" Header="日付" />
+							<GridViewColumn DisplayMemberBinding="{Binding Content}" Header="内容" />
+							<GridViewColumn Header="金額">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<TextBlock
+											Foreground="{Binding Amount, Converter={StaticResource AmountToColorBrushConverter}}"
+											Text="{Binding Amount, StringFormat={}{0:C}, ConverterCulture=ja-JP}"
+											TextAlignment="Right" />
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn DisplayMemberBinding="{Binding Institution}" Header="保有金融機関" />
+							<GridViewColumn DisplayMemberBinding="{Binding LargeCategory}" Header="大項目" />
+							<GridViewColumn DisplayMemberBinding="{Binding MiddleCategory}" Header="中項目" />
+							<GridViewColumn DisplayMemberBinding="{Binding Memo}" Header="メモ" />
+						</GridView>
+					</ListView.View>
+				</ListView>
+			</Grid>
+		</TabItem>
+		<TabItem Header="グラフ">
+			<Grid>
+				<oxy:PlotView Model="{Binding LargeCategoryModel.Value}" />
+			</Grid>
+		</TabItem>
+	</TabControl>
 </Window>
