@@ -49,6 +49,15 @@
 					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 				</Style>
 			</ListView.Resources>
+			<ItemsControl.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding IsCalculateTarget}" Value="False">
+							<Setter Property="Background" Value="DarkGray" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</ItemsControl.ItemContainerStyle>
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="計算対象">
