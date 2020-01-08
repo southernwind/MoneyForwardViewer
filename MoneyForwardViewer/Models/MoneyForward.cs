@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MoneyForwardViewer.DataBase;
@@ -28,10 +29,19 @@ namespace MoneyForwardViewer.Models {
 			get;
 		} = new ReactivePropertySlim<IEnumerable<MfTransaction>>(Array.Empty<MfTransaction>());
 
+		public IReactiveProperty<IEnumerable<MfAsset>> Assets {
+			get;
+		} = new ReactivePropertySlim<IEnumerable<MfAsset>>(Array.Empty<MfAsset>());
+
 		public MoneyForward(MoneyForwardViewerDbContext dbContext) {
 			this._dbContext = dbContext;
 		}
 
+		public Func<double,string> LabelFormatter {
+			get {
+				return x => x.ToString();
+			}
+		}
 		public async Task ImportFromMoneyForward() {
 			var mfs = new MoneyForwardScraper(this.Id.Value, this.Password.Value);
 			// 取引履歴取得
@@ -67,6 +77,10 @@ namespace MoneyForwardViewer.Models {
 
 		public async Task LoadTransactions() {
 			this.Transactions.Value = await this._dbContext.MfTransactions.OrderBy(x => x.Date).ToArrayAsync();
+		}
+
+		public async Task LoadAssets() {
+			this.Assets.Value = await this._dbContext.MfAssets.OrderBy(x => x.Date).ToArrayAsync();
 		}
 	}
 }

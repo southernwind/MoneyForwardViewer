@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Prism.Unity" />
     <PackageReference Include="ReactiveProperty" />
-    <PackageReference Include="OxyPlot.Wpf" />
+    <PackageReference Include="LiveCharts.Wpf" />
   </ItemGroup>
 
 </Project>
