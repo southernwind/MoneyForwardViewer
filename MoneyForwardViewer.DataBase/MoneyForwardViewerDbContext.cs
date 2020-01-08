@@ -14,6 +14,11 @@ namespace MoneyForwardViewer.DataBase {
 			set;
 		}
 
+		public DbSet<MfAsset> MfAssets {
+			get;
+			set;
+		}
+
 		public MoneyForwardViewerDbContext(DbConnection dbConnection) {
 			this._dbConnection = dbConnection;
 		}
@@ -21,6 +26,7 @@ namespace MoneyForwardViewer.DataBase {
 		protected override void OnModelCreating(ModelBuilder modelBuilder) {
 			// Primary Keys
 			modelBuilder.Entity<MfTransaction>().HasKey(x => x.TransactionId);
+			modelBuilder.Entity<MfAsset>().HasKey(x => new { x.Date, x.Institution, x.Category });
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {

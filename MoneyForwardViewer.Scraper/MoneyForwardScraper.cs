@@ -69,6 +69,34 @@ namespace MoneyForwardViewer.Scraper {
 		}
 
 		/// <summary>
+		/// 資産推移の取得
+		/// </summary>
+		/// <returns></returns>
+		public async Task<MfAsset[]> GetAssets() {
+			var result = new List<MfAsset>();
+			await this.LoginAsync();
+			for (var date = DateTime.Now.Date; ; date = date.AddDays(-1)) {
+				var htmlDoc = await this._hcw.GetDocumentAsync($"https://moneyforward.com/bs/history/list/{date:yyyy-MM-dd}");
+				var list = htmlDoc
+					.DocumentNode
+					.QuerySelectorAll(@"#history-list tbody tr")
+					.Select(tr => tr.QuerySelectorAll("td"))
+					.Select(tdList => new MfAsset {
+						Date = date,
+						Institution = tdList[0].InnerText.Trim(),
+						Category = tdList[1].InnerText.Trim(),
+						Amount = int.Parse(tdList[2].InnerText.Trim().Replace("円", "").Replace(",", ""))
+					});
+
+				if (!list.Any()) {
+					return result.ToArray();
+				}
+
+				result.AddRange(list);
+			}
+		}
+
+		/// <summary>
 		/// ログインする。
 		/// </summary>
 		private async Task LoginAsync() {
