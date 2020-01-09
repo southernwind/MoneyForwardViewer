@@ -10,8 +10,8 @@
 	xmlns:prism="http://prismlibrary.com/"
 	xmlns:vm="clr-namespace:MoneyForwardViewer.ViewModels"
 	Title="MainWindow"
-	Width="800"
-	Height="450"
+	Width="1200"
+	Height="1000"
 	d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
@@ -20,105 +20,130 @@
 			<i:InvokeCommandAction Command="{Binding LoadCommand}" />
 		</i:EventTrigger>
 	</i:Interaction.Triggers>
-	<TabControl>
-		<TabItem Header="家計">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Expander Grid.Row="0" Header="日付絞り込み">
 			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
-				<DockPanel Grid.Row="0">
-					<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-						<TextBlock VerticalAlignment="Center" Text="ID" />
-						<TextBox
-							Width="100"
-							Margin="5"
-							Text="{Binding Id.Value}" />
-						<TextBlock VerticalAlignment="Center" Text="Password" />
-						<TextBox
-							Width="100"
-							Margin="5"
-							Text="{Binding Password.Value}" />
-						<Button
-							Margin="5"
-							Command="{Binding ImportCommand}"
-							Content="取得実行" />
-					</StackPanel>
-					<Grid />
-				</DockPanel>
-				<ListView Grid.Row="1" ItemsSource="{Binding Transactions.Value}">
-					<ListView.Resources>
-						<Style TargetType="ListViewItem">
-							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-						</Style>
-					</ListView.Resources>
-					<ItemsControl.ItemContainerStyle>
-						<Style TargetType="ListViewItem">
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding IsCalculateTarget}" Value="False">
-									<Setter Property="Background" Value="DarkGray" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</ItemsControl.ItemContainerStyle>
-					<ListView.View>
-						<GridView>
-							<GridViewColumn Header="計算対象">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<CheckBox
-											IsChecked="{Binding IsCalculateTarget}"
-											IsHitTestVisible="False"
-											IsTabStop="False" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn DisplayMemberBinding="{Binding Date, StringFormat=yyyy/MM/dd}" Header="日付" />
-							<GridViewColumn DisplayMemberBinding="{Binding Content}" Header="内容" />
-							<GridViewColumn Header="金額">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<TextBlock
-											Foreground="{Binding Amount, Converter={StaticResource AmountToColorBrushConverter}}"
-											Text="{Binding Amount, StringFormat={}{0:C}, ConverterCulture=ja-JP}"
-											TextAlignment="Right" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn DisplayMemberBinding="{Binding Institution}" Header="保有金融機関" />
-							<GridViewColumn DisplayMemberBinding="{Binding LargeCategory}" Header="大項目" />
-							<GridViewColumn DisplayMemberBinding="{Binding MiddleCategory}" Header="中項目" />
-							<GridViewColumn DisplayMemberBinding="{Binding Memo}" Header="メモ" />
-						</GridView>
-					</ListView.View>
-				</ListView>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="15" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<StackPanel Grid.Column="1">
+					<TextBlock Text="From" TextAlignment="Center" />
+					<Calendar SelectedDate="{Binding FromDate.Value}" />
+				</StackPanel>
+				<StackPanel Grid.Column="3">
+					<TextBlock Text="To" TextAlignment="Center" />
+					<Calendar SelectedDate="{Binding ToDate.Value}" />
+				</StackPanel>
 			</Grid>
-		</TabItem>
-		<TabItem Header="資産推移">
-			<Grid>
-				<lvc:CartesianChart LegendLocation="Right" Series="{Binding AssetTransitionSeriesCollection.Value}">
-					<lvc:CartesianChart.AxisX>
-						<lvc:Axis Title="日" LabelFormatter="{Binding DateLabelFormatter}" />
-					</lvc:CartesianChart.AxisX>
-					<lvc:CartesianChart.AxisY>
-						<lvc:Axis Title="金額" />
-					</lvc:CartesianChart.AxisY>
-				</lvc:CartesianChart>
-			</Grid>
-		</TabItem>
-		<TabItem Header="グラフ">
-			<Grid>
-				<lvc:PieChart
-					Margin="0,15"
-					DataTooltip="{x:Null}"
-					InnerRadius="100"
-					LegendLocation="Right"
-					Series="{Binding LargeCategorySeriesCollection.Value}">
-					<lvc:PieChart.ChartLegend>
-						<lvc:DefaultLegend BulletSize="20" />
-					</lvc:PieChart.ChartLegend>
-				</lvc:PieChart>
-			</Grid>
-		</TabItem>
-	</TabControl>
+		</Expander>
+		<TabControl Grid.Row="1">
+			<TabItem Header="家計">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<DockPanel Grid.Row="0">
+						<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+							<TextBlock VerticalAlignment="Center" Text="ID" />
+							<TextBox
+								Width="100"
+								Margin="5"
+								Text="{Binding Id.Value}" />
+							<TextBlock VerticalAlignment="Center" Text="Password" />
+							<TextBox
+								Width="100"
+								Margin="5"
+								Text="{Binding Password.Value}" />
+							<Button
+								Margin="5"
+								Command="{Binding ImportCommand}"
+								Content="取得実行" />
+						</StackPanel>
+						<Grid />
+					</DockPanel>
+					<ListView Grid.Row="1" ItemsSource="{Binding Transactions.Value}">
+						<ListView.Resources>
+							<Style TargetType="ListViewItem">
+								<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+							</Style>
+						</ListView.Resources>
+						<ItemsControl.ItemContainerStyle>
+							<Style TargetType="ListViewItem">
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding IsCalculateTarget}" Value="False">
+										<Setter Property="Background" Value="DarkGray" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</ItemsControl.ItemContainerStyle>
+						<ListView.View>
+							<GridView>
+								<GridViewColumn Header="計算対象">
+									<GridViewColumn.CellTemplate>
+										<DataTemplate>
+											<CheckBox
+												IsChecked="{Binding IsCalculateTarget}"
+												IsHitTestVisible="False"
+												IsTabStop="False" />
+										</DataTemplate>
+									</GridViewColumn.CellTemplate>
+								</GridViewColumn>
+								<GridViewColumn DisplayMemberBinding="{Binding Date, StringFormat=yyyy/MM/dd}" Header="日付" />
+								<GridViewColumn DisplayMemberBinding="{Binding Content}" Header="内容" />
+								<GridViewColumn Header="金額">
+									<GridViewColumn.CellTemplate>
+										<DataTemplate>
+											<TextBlock
+												Foreground="{Binding Amount, Converter={StaticResource AmountToColorBrushConverter}}"
+												Text="{Binding Amount, StringFormat={}{0:C}, ConverterCulture=ja-JP}"
+												TextAlignment="Right" />
+										</DataTemplate>
+									</GridViewColumn.CellTemplate>
+								</GridViewColumn>
+								<GridViewColumn DisplayMemberBinding="{Binding Institution}" Header="保有金融機関" />
+								<GridViewColumn DisplayMemberBinding="{Binding LargeCategory}" Header="大項目" />
+								<GridViewColumn DisplayMemberBinding="{Binding MiddleCategory}" Header="中項目" />
+								<GridViewColumn DisplayMemberBinding="{Binding Memo}" Header="メモ" />
+							</GridView>
+						</ListView.View>
+					</ListView>
+				</Grid>
+			</TabItem>
+			<TabItem Header="資産推移">
+				<Grid>
+					<lvc:CartesianChart LegendLocation="Right" Series="{Binding AssetTransitionSeriesCollection.Value}">
+						<lvc:CartesianChart.AxisX>
+							<lvc:Axis Title="日" LabelFormatter="{Binding DateLabelFormatter}" />
+						</lvc:CartesianChart.AxisX>
+						<lvc:CartesianChart.AxisY>
+							<lvc:Axis Title="金額" />
+						</lvc:CartesianChart.AxisY>
+					</lvc:CartesianChart>
+				</Grid>
+			</TabItem>
+			<TabItem Header="グラフ">
+				<Grid>
+					<lvc:PieChart
+						Margin="0,15"
+						DataTooltip="{x:Null}"
+						InnerRadius="100"
+						LegendLocation="Right"
+						Series="{Binding LargeCategorySeriesCollection.Value}">
+						<lvc:PieChart.ChartLegend>
+							<lvc:DefaultLegend BulletSize="20" />
+						</lvc:PieChart.ChartLegend>
+					</lvc:PieChart>
+				</Grid>
+			</TabItem>
+		</TabControl>
+	</Grid>
 </Window>

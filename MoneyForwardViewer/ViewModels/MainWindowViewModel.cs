@@ -30,6 +30,15 @@ namespace MoneyForwardViewer.ViewModels {
 		public IReadOnlyReactiveProperty<IEnumerable<MfAsset>> Assets {
 			get;
 		}
+
+		public IReactiveProperty<DateTime> FromDate {
+			get;
+		}
+
+		public IReactiveProperty<DateTime> ToDate {
+			get;
+		}
+
 		public IReadOnlyReactiveProperty<SeriesCollection> LargeCategorySeriesCollection {
 			get;
 		}
@@ -48,15 +57,28 @@ namespace MoneyForwardViewer.ViewModels {
 
 		public Func<double, string> DateLabelFormatter {
 			get {
-				return x => $"{new DateTime((long)x):yyyy/MM/dd}";
+				return x => $"{new DateTime((long)x):MM/dd}";
 			}
 		}
 
 		public MainWindowViewModel(MoneyForward moneyForward) {
+			var lastmonth = DateTime.Today.AddMonths(-1);
+			this.FromDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year,lastmonth.Month,1));
+			this.ToDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year,lastmonth.Month,DateTime.DaysInMonth(lastmonth.Year,lastmonth.Month)));
 			this.Id = moneyForward.Id.ToReactivePropertyAsSynchronized(x => x.Value);
 			this.Password = moneyForward.Password.ToReactivePropertyAsSynchronized(x => x.Value);
-			this.Transactions = moneyForward.Transactions.ToReadOnlyReactivePropertySlim();
-			this.Assets = moneyForward.Assets.ToReadOnlyReactivePropertySlim();
+			this.Transactions =
+				moneyForward.Transactions
+					.CombineLatest(this.FromDate,(transactions, from)=> new { transactions, from })
+					.CombineLatest(this.ToDate,(x,to)=>new {x.transactions,x.from,to})
+					.Select(x => x.transactions.Where(t => t.Date > x.from && t.Date < x.to))
+					.ToReadOnlyReactivePropertySlim();
+			this.Assets =
+				moneyForward.Assets
+					.CombineLatest(this.FromDate, (assets, from) => new { assets, from })
+					.CombineLatest(this.ToDate, (x, to) => new { x.assets, x.from, to })
+					.Select(x => x.assets.Where(t => t.Date > x.from && t.Date < x.to))
+					.ToReadOnlyReactivePropertySlim();
 			this.LargeCategorySeriesCollection = this.Transactions.Select(x => {
 				var sc = new SeriesCollection();
 				var sl =
