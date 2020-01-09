@@ -10,7 +10,7 @@
 	xmlns:prism="http://prismlibrary.com/"
 	xmlns:vm="clr-namespace:MoneyForwardViewer.ViewModels"
 	Title="MainWindow"
-	Width="1200"
+	Width="1400"
 	Height="1000"
 	d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
 	prism:ViewModelLocator.AutoWireViewModel="True"
@@ -98,7 +98,13 @@
 									</GridViewColumn.CellTemplate>
 								</GridViewColumn>
 								<GridViewColumn DisplayMemberBinding="{Binding Date, StringFormat=yyyy/MM/dd}" Header="日付" />
-								<GridViewColumn DisplayMemberBinding="{Binding Content}" Header="内容" />
+								<GridViewColumn Width="500" Header="内容">
+									<GridViewColumn.CellTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Content}" TextWrapping="WrapWithOverflow" />
+										</DataTemplate>
+									</GridViewColumn.CellTemplate>
+								</GridViewColumn>
 								<GridViewColumn Header="金額">
 									<GridViewColumn.CellTemplate>
 										<DataTemplate>
@@ -109,10 +115,22 @@
 										</DataTemplate>
 									</GridViewColumn.CellTemplate>
 								</GridViewColumn>
-								<GridViewColumn DisplayMemberBinding="{Binding Institution}" Header="保有金融機関" />
+								<GridViewColumn Width="200" Header="保有金融機関">
+									<GridViewColumn.CellTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Institution}" TextWrapping="WrapWithOverflow" />
+										</DataTemplate>
+									</GridViewColumn.CellTemplate>
+								</GridViewColumn>
 								<GridViewColumn DisplayMemberBinding="{Binding LargeCategory}" Header="大項目" />
 								<GridViewColumn DisplayMemberBinding="{Binding MiddleCategory}" Header="中項目" />
-								<GridViewColumn DisplayMemberBinding="{Binding Memo}" Header="メモ" />
+								<GridViewColumn Width="200" Header="メモ">
+									<GridViewColumn.CellTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Memo}" TextWrapping="WrapWithOverflow" />
+										</DataTemplate>
+									</GridViewColumn.CellTemplate>
+								</GridViewColumn>
 							</GridView>
 						</ListView.View>
 					</ListView>
@@ -125,8 +143,11 @@
 							<lvc:Axis Title="日" LabelFormatter="{Binding DateLabelFormatter}" />
 						</lvc:CartesianChart.AxisX>
 						<lvc:CartesianChart.AxisY>
-							<lvc:Axis Title="金額" />
+							<lvc:Axis Title="金額" LabelFormatter="{Binding CurrencyLabelFormatter}" />
 						</lvc:CartesianChart.AxisY>
+						<lvc:CartesianChart.DataTooltip>
+							<lvc:DefaultTooltip SelectionMode="SharedXValues" />
+						</lvc:CartesianChart.DataTooltip>
 					</lvc:CartesianChart>
 				</Grid>
 			</TabItem>
@@ -134,13 +155,15 @@
 				<Grid>
 					<lvc:PieChart
 						Margin="0,15"
-						DataTooltip="{x:Null}"
 						InnerRadius="100"
 						LegendLocation="Right"
 						Series="{Binding LargeCategorySeriesCollection.Value}">
 						<lvc:PieChart.ChartLegend>
 							<lvc:DefaultLegend BulletSize="20" />
 						</lvc:PieChart.ChartLegend>
+						<lvc:PieChart.DataTooltip>
+							<lvc:DefaultTooltip SelectionMode="OnlySender" />
+						</lvc:PieChart.DataTooltip>
 					</lvc:PieChart>
 				</Grid>
 			</TabItem>

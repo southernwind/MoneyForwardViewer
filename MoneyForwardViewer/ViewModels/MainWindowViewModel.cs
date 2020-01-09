@@ -61,6 +61,12 @@ namespace MoneyForwardViewer.ViewModels {
 			}
 		}
 
+		public Func<double, string> CurrencyLabelFormatter {
+			get {
+				return x => $"{x:\\\\#,0}";
+			}
+		}
+
 		public MainWindowViewModel(MoneyForward moneyForward) {
 			var lastmonth = DateTime.Today.AddMonths(-1);
 			this.FromDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year,lastmonth.Month,1));
@@ -91,7 +97,7 @@ namespace MoneyForwardViewer.ViewModels {
 							Title = x.Title,
 							Values = new ChartValues<int>(new []{ x.Value }),
 							DataLabels = true,
-							LabelPoint = p => $"{p.SeriesView.Title}\n{p.Y:\\\\#,0}\n{p.Participation:P}"
+							LabelPoint = p => $"{p.SeriesView.Title}\n{p.Y:\\\\#,0}"
 						});
 
 				sc.AddRange(sl);
