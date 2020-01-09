@@ -6,7 +6,6 @@ using MoneyForwardViewer.DataBase;
 using MoneyForwardViewer.Views;
 
 using Prism.Ioc;
-using Prism.Unity;
 
 namespace MoneyForwardViewer {
 	/// <summary>
@@ -22,7 +21,7 @@ namespace MoneyForwardViewer {
 			var sb = new SqliteConnectionStringBuilder {
 				DataSource = "./database.db"
 			};
-			var dbContext = new MoneyForwardViewerDbContext(new SqliteConnection(sb.ConnectionString));
+			var dbContext = new MoneyForwardViewerDbContext(DbType.SQLite, sb.ConnectionString);
 			dbContext.Database.EnsureCreated();
 			containerRegistry.RegisterInstance(dbContext);
 		}
