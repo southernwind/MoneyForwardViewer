@@ -32,8 +32,7 @@ namespace MoneyForwardViewer.Scraper {
 		/// 取引履歴の取得
 		/// </summary>
 		/// <returns></returns>
-		public async Task<MfTransaction[]> GetTransactions() {
-			var result = new List<MfTransaction>();
+		public async IAsyncEnumerable<MfTransaction[]> GetTransactions() {
 			await this.LoginAsync();
 			var now = DateTime.Now;
 			for (var year = now.Year; ; year--) {
@@ -43,7 +42,7 @@ namespace MoneyForwardViewer.Scraper {
 					var htmlDoc = await this._hcw.GetDocumentAsync("https://moneyforward.com/cf");
 					var dateRange = htmlDoc.DocumentNode.QuerySelector(".date_range h2").InnerText;
 					if (!dateRange.StartsWith($"{year}/{month:D2}")) {
-						return result.ToArray();
+						yield break;
 					}
 
 					var list = htmlDoc
@@ -63,7 +62,7 @@ namespace MoneyForwardViewer.Scraper {
 							Memo = tdList[7].InnerText.Trim()
 						});
 
-					result.AddRange(list);
+					yield return list.ToArray();
 				}
 			}
 		}
@@ -72,8 +71,7 @@ namespace MoneyForwardViewer.Scraper {
 		/// 資産推移の取得
 		/// </summary>
 		/// <returns></returns>
-		public async Task<MfAsset[]> GetAssets() {
-			var result = new List<MfAsset>();
+		public async IAsyncEnumerable<MfAsset[]> GetAssets() {
 			await this.LoginAsync();
 			for (var date = DateTime.Now.Date; ; date = date.AddDays(-1)) {
 				var htmlDoc = await this._hcw.GetDocumentAsync($"https://moneyforward.com/bs/history/list/{date:yyyy-MM-dd}");
@@ -89,10 +87,10 @@ namespace MoneyForwardViewer.Scraper {
 					});
 
 				if (!list.Any()) {
-					return result.ToArray();
+					yield break;
 				}
 
-				result.AddRange(list);
+				yield return list.ToArray();
 			}
 		}
 
