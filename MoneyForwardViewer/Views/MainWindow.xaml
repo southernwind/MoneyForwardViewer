@@ -53,6 +53,10 @@
 					</Grid.RowDefinitions>
 					<DockPanel Grid.Row="0">
 						<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+							<TextBlock
+								Margin="0,0,15,0"
+								VerticalAlignment="Center"
+								Text="{Binding ProcessingText.Value}" />
 							<TextBlock VerticalAlignment="Center" Text="ID" />
 							<TextBox
 								Width="100"

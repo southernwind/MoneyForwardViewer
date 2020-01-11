@@ -1,4 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
+
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
+
 using MoneyForwardViewer.DataBase.Tables;
 using MoneyForwardViewer.Models;
 
@@ -6,12 +14,6 @@ using Prism.Mvvm;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
-using System.Reactive.Linq;
-using System.Linq;
-using LiveCharts;
-using LiveCharts.Wpf;
-using LiveCharts.Defaults;
 
 namespace MoneyForwardViewer.ViewModels {
 	internal class MainWindowViewModel : BindableBase {
@@ -47,6 +49,10 @@ namespace MoneyForwardViewer.ViewModels {
 			get;
 		}
 
+		public IReadOnlyReactiveProperty<string> ProcessingText {
+			get;
+		}
+
 		public ReactiveCommand ImportCommand {
 			get;
 		} = new ReactiveCommand();
@@ -69,14 +75,16 @@ namespace MoneyForwardViewer.ViewModels {
 
 		public MainWindowViewModel(MoneyForward moneyForward) {
 			var lastmonth = DateTime.Today.AddMonths(-1);
-			this.FromDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year,lastmonth.Month,1));
-			this.ToDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year,lastmonth.Month,DateTime.DaysInMonth(lastmonth.Year,lastmonth.Month)));
+			this.FromDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year, lastmonth.Month, 1));
+			this.ToDate = new ReactivePropertySlim<DateTime>(new DateTime(lastmonth.Year, lastmonth.Month, DateTime.DaysInMonth(lastmonth.Year, lastmonth.Month)));
 			this.Id = moneyForward.Id.ToReactivePropertyAsSynchronized(x => x.Value);
 			this.Password = moneyForward.Password.ToReactivePropertyAsSynchronized(x => x.Value);
+			this.ProcessingText = moneyForward.ProcessingText.ToReadOnlyReactivePropertySlim();
+
 			this.Transactions =
 				moneyForward.Transactions
-					.CombineLatest(this.FromDate,(transactions, from)=> new { transactions, from })
-					.CombineLatest(this.ToDate,(x,to)=>new {x.transactions,x.from,to})
+					.CombineLatest(this.FromDate, (transactions, from) => new { transactions, from })
+					.CombineLatest(this.ToDate, (x, to) => new { x.transactions, x.from, to })
 					.Select(x => x.transactions.Where(t => t.Date > x.from && t.Date < x.to))
 					.ToReadOnlyReactivePropertySlim();
 			this.Assets =
@@ -90,12 +98,12 @@ namespace MoneyForwardViewer.ViewModels {
 				var sl =
 					x.Where(t => t.IsCalculateTarget)
 						.GroupBy(t => t.LargeCategory)
-						.Select(g => new {Title=g.Key,Value= g.Sum(x => -x.Amount) })
+						.Select(g => new { Title = g.Key, Value = g.Sum(x => -x.Amount) })
 						.Where(x => x.Value > 0)
 						.OrderBy(x => x.Value)
 						.Select(x => new PieSeries() {
 							Title = x.Title,
-							Values = new ChartValues<int>(new []{ x.Value }),
+							Values = new ChartValues<int>(new[] { x.Value }),
 							DataLabels = true,
 							LabelPoint = p => $"{p.SeriesView.Title}\n{p.Y:\\\\#,0}"
 						});
@@ -112,7 +120,7 @@ namespace MoneyForwardViewer.ViewModels {
 							Title = $"{x.Key.Institution}({x.Key.Category})",
 							Values = new ChartValues<DateTimePoint>(
 								x.Select(
-									x => new DateTimePoint(x.Date, Math.Max(x.Amount,0))
+									x => new DateTimePoint(x.Date, Math.Max(x.Amount, 0))
 								).ToArray()),
 							LineSmoothness = 0
 						};
