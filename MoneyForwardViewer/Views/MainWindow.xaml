@@ -4,7 +4,6 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-	xmlns:local="clr-namespace:MoneyForwardViewer.Views"
 	xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
@@ -28,11 +27,11 @@
 		<Expander Grid.Row="0" Header="日付絞り込み">
 			<Grid>
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="513*" />
+					<ColumnDefinition Width="179*" />
 					<ColumnDefinition Width="15" />
 					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="513*" />
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="1">
 					<TextBlock Text="From" TextAlignment="Center" />

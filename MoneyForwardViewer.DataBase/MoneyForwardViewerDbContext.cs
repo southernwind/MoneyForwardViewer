@@ -1,13 +1,11 @@
-using System.Data.Common;
-using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+
 using MoneyForwardViewer.DataBase.Tables;
 
 namespace MoneyForwardViewer.DataBase {
 	public enum DbType {
-		SQLite,
-		SQLServer
+		SqLite,
+		SqlServer
 	}
 	public class MoneyForwardViewerDbContext : DbContext {
 		private readonly string _dbConnectionString;
@@ -36,10 +34,10 @@ namespace MoneyForwardViewer.DataBase {
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 			switch (this._dbType) {
-				case DbType.SQLite:
+				case DbType.SqLite:
 					optionsBuilder.UseSqlite(this._dbConnectionString);
 					break;
-				case DbType.SQLServer:
+				case DbType.SqlServer:
 					optionsBuilder.UseSqlServer(this._dbConnectionString);
 					break;
 			}

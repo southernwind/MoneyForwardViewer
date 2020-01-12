@@ -41,11 +41,6 @@ namespace MoneyForwardViewer.Models {
 			this._dbContext = dbContext;
 		}
 
-		public Func<double, string> LabelFormatter {
-			get {
-				return x => x.ToString();
-			}
-		}
 		public async Task ImportFromMoneyForward() {
 			var mfs = new MoneyForwardScraper(this.Id.Value, this.Password.Value);
 			await using var transaction = await this._dbContext.Database.BeginTransactionAsync();

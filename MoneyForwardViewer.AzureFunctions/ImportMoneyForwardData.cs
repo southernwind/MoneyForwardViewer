@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
 using MoneyForwardViewer.DataBase;
 using MoneyForwardViewer.DataBase.Tables;
 using MoneyForwardViewer.Scraper;
@@ -64,7 +66,7 @@ namespace MoneyForwardViewer.AzureFunctions {
 
 		private static MoneyForwardViewerDbContext GetDbContext() {
 			// DataBase
-			var dbContext = new MoneyForwardViewerDbContext(DbType.SQLServer, Configuration.GetConnectionString("DefaultSqlConnection"));
+			var dbContext = new MoneyForwardViewerDbContext(DbType.SqlServer, Configuration.GetConnectionString("DefaultSqlConnection"));
 			dbContext.Database.EnsureCreated();
 			return dbContext;
 		}

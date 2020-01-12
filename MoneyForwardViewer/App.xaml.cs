@@ -21,7 +21,7 @@ namespace MoneyForwardViewer {
 			var sb = new SqliteConnectionStringBuilder {
 				DataSource = "./database.db"
 			};
-			var dbContext = new MoneyForwardViewerDbContext(DbType.SQLite, sb.ConnectionString);
+			var dbContext = new MoneyForwardViewerDbContext(DbType.SqLite, sb.ConnectionString);
 			dbContext.Database.EnsureCreated();
 			containerRegistry.RegisterInstance(dbContext);
 		}
