@@ -130,7 +130,9 @@ namespace MoneyForwardViewer.ViewModels {
 			}).ToReadOnlyReactivePropertySlim();
 
 			this.ImportCommand.Subscribe(async () => {
-				await moneyForward.ImportFromMoneyForward();
+				var to = DateTime.Now;
+				var from = DateTime.Now.AddYears(-1);
+				await moneyForward.ImportFromMoneyForward(from, to);
 			});
 			this.LoadCommand.Subscribe(async () => {
 				await moneyForward.LoadTransactions();

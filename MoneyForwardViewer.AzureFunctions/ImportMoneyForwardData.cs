@@ -28,6 +28,12 @@ namespace MoneyForwardViewer.AzureFunctions {
 
 		[FunctionName("ImportMoneyForwardData")]
 		public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log) {
+			var to = DateTime.Now;
+			var from = DateTime.Now.AddYears(-1);
+			await ImportMoneyForwardDataCore(from, to, log);
+		}
+
+		private static async Task ImportMoneyForwardDataCore(DateTime from, DateTime to, ILogger log) {
 			var id = Configuration.GetValue<string>("MAIL");
 			log.LogInformation($"アカウント[{id}]の情報を取得してデータベースに保存します。");
 			var password = Configuration.GetValue<string>("PASSWORD");
@@ -36,7 +42,7 @@ namespace MoneyForwardViewer.AzureFunctions {
 
 			await using var transaction = await dbContext.Database.BeginTransactionAsync();
 			// 取引履歴登録
-			await foreach (var mt in mfs.GetTransactions()) {
+			await foreach (var mt in mfs.GetTransactions(from, to)) {
 				var ids = mt.Select(x => x.TransactionId).ToArray();
 				var deleteTransactionList = dbContext.MfTransactions.Where(t => ids.Contains(t.TransactionId));
 				dbContext.MfTransactions.RemoveRange(deleteTransactionList);
@@ -45,7 +51,7 @@ namespace MoneyForwardViewer.AzureFunctions {
 			}
 
 			// 資産推移登録
-			await foreach (var ma in mfs.GetAssets()) {
+			await foreach (var ma in mfs.GetAssets(from, to)) {
 				var assets =
 					ma.GroupBy(x => new { x.Date, x.Institution, x.Category })
 						.Select(x => new MfAsset {

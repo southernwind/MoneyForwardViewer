@@ -41,11 +41,12 @@ namespace MoneyForwardViewer.Models {
 			this._dbContext = dbContext;
 		}
 
-		public async Task ImportFromMoneyForward() {
+		public async Task ImportFromMoneyForward(DateTime from, DateTime to) {
 			var mfs = new MoneyForwardScraper(this.Id.Value, this.Password.Value);
 			await using var transaction = await this._dbContext.Database.BeginTransactionAsync();
+
 			// 取引履歴登録
-			await foreach (var mt in mfs.GetTransactions()) {
+			await foreach (var mt in mfs.GetTransactions(from,to)) {
 				var ids = mt.Select(x => x.TransactionId).ToArray();
 				var deleteTransactionList = this._dbContext.MfTransactions.Where(t => ids.Contains(t.TransactionId));
 				this._dbContext.MfTransactions.RemoveRange(deleteTransactionList);
@@ -54,7 +55,7 @@ namespace MoneyForwardViewer.Models {
 			}
 
 			// 資産推移登録
-			await foreach (var ma in mfs.GetAssets()) {
+			await foreach (var ma in mfs.GetAssets(from, to)) {
 				var assets =
 					ma.GroupBy(x => new { x.Date, x.Institution, x.Category })
 						.Select(x => new MfAsset {

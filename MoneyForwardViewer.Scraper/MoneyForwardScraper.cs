@@ -31,36 +31,34 @@ namespace MoneyForwardViewer.Scraper {
 		/// 取引履歴の取得
 		/// </summary>
 		/// <returns></returns>
-		public async IAsyncEnumerable<MfTransaction[]> GetTransactions() {
+		public async IAsyncEnumerable<MfTransaction[]> GetTransactions(DateTime from, DateTime to) {
 			await this.LoginAsync();
-			var now = DateTime.Now;
-			for (var year = now.Year; ; year--) {
-				for (var month = now.Year == year ? now.Month : 12; month >= 1; month--) {
-					this._hcw.CookieContainer.Add(new Cookie("cf_last_fetch_from_date", $"{year}/{month:D2}/01", "/",
-						"moneyforward.com"));
-					var htmlDoc = await this._hcw.GetDocumentAsync("https://moneyforward.com/cf");
-					var dateRange = htmlDoc.DocumentNode.QuerySelector(".date_range h2").InnerText;
-					if (!dateRange.StartsWith($"{year}/{month:D2}")) {
-						yield break;
-					}
+			for (var date = from; date <= to; date = date.AddMonths(1)) {
+				var year = date.Year;
+				var month = date.Month;
+				this._hcw.CookieContainer.Add(new Cookie("cf_last_fetch_from_date", $"{year}/{month:D2}/01", "/",
+					"moneyforward.com"));
+				var htmlDoc = await this._hcw.GetDocumentAsync("https://moneyforward.com/cf");
+				var dateRange = htmlDoc.DocumentNode.QuerySelector(".date_range h2").InnerText;
 
-					var list = htmlDoc
-						.DocumentNode
-						.QuerySelectorAll(@".list_body .transaction_list")
-						.Select(tr => tr.QuerySelectorAll("td"))
-						.Select(tdList => new MfTransaction {
-							TransactionId =
-								tdList[0].QuerySelector("input#user_asset_act_id").GetAttributeValue("value", null),
-							IsCalculateTarget = tdList[0].QuerySelector("i.icon-check") != null,
-							Date = new DateTime(year, month, int.Parse(tdList[1].InnerText.Trim().Substring(3, 2))),
-							Content = tdList[2].InnerText.Trim(),
-							Amount = int.Parse(tdList[3].QuerySelector("span").InnerText.Trim().Replace(",", "")),
-							Institution = tdList[4].GetAttributeValue("title", null),
-							LargeCategory = tdList[5].InnerText.Trim(),
-							MiddleCategory = tdList[6].InnerText.Trim(),
-							Memo = tdList[7].InnerText.Trim()
-						});
+				var list = htmlDoc
+					.DocumentNode
+					.QuerySelectorAll(@".list_body .transaction_list")
+					.Select(tr => tr.QuerySelectorAll("td"))
+					.Select(tdList => new MfTransaction {
+						TransactionId =
+							tdList[0].QuerySelector("input#user_asset_act_id").GetAttributeValue("value", null),
+						IsCalculateTarget = tdList[0].QuerySelector("i.icon-check") != null,
+						Date = new DateTime(year, month, int.Parse(tdList[1].InnerText.Trim().Substring(3, 2))),
+						Content = tdList[2].InnerText.Trim(),
+						Amount = int.Parse(tdList[3].QuerySelector("span").InnerText.Trim().Replace(",", "")),
+						Institution = tdList[4].GetAttributeValue("title", null),
+						LargeCategory = tdList[5].InnerText.Trim(),
+						MiddleCategory = tdList[6].InnerText.Trim(),
+						Memo = tdList[7].InnerText.Trim()
+					});
 
+				if (list.Count() > 0) {
 					yield return list.ToArray();
 				}
 			}
@@ -70,9 +68,9 @@ namespace MoneyForwardViewer.Scraper {
 		/// 資産推移の取得
 		/// </summary>
 		/// <returns></returns>
-		public async IAsyncEnumerable<MfAsset[]> GetAssets() {
+		public async IAsyncEnumerable<MfAsset[]> GetAssets(DateTime from, DateTime to) {
 			await this.LoginAsync();
-			for (var date = DateTime.Now.Date; ; date = date.AddDays(-1)) {
+			for (var date = from; date <= to; date = date.AddDays(1)) {
 				var htmlDoc = await this._hcw.GetDocumentAsync($"https://moneyforward.com/bs/history/list/{date:yyyy-MM-dd}");
 				var list = htmlDoc
 					.DocumentNode
@@ -84,12 +82,9 @@ namespace MoneyForwardViewer.Scraper {
 						Category = tdList[1].InnerText.Trim(),
 						Amount = int.Parse(tdList[2].InnerText.Trim().Replace("円", "").Replace(",", ""))
 					});
-
-				if (!list.Any()) {
-					yield break;
+				if (list.Count() > 0) {
+					yield return list.ToArray();
 				}
-
-				yield return list.ToArray();
 			}
 		}
 
