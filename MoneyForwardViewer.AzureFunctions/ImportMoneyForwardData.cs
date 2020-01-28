@@ -68,6 +68,8 @@ namespace MoneyForwardViewer.AzureFunctions {
 
 			await dbContext.SaveChangesAsync();
 			await transaction.CommitAsync();
+			;
+			log.LogInformation($"完了");
 		}
 
 		private static MoneyForwardViewerDbContext GetDbContext() {
