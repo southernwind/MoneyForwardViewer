@@ -40,6 +40,9 @@ namespace MoneyForwardViewer.Scraper {
 					"moneyforward.com"));
 				var htmlDoc = await this._hcw.GetDocumentAsync("https://moneyforward.com/cf");
 				var dateRange = htmlDoc.DocumentNode.QuerySelector(".date_range h2").InnerText;
+				if (!dateRange.StartsWith($"{year}/{month:D2}")) {
+					continue;
+				}
 
 				var list = htmlDoc
 					.DocumentNode
