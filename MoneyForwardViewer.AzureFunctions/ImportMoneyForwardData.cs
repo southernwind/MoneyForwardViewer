@@ -34,6 +34,7 @@ namespace MoneyForwardViewer.AzureFunctions {
 		}
 
 		private static async Task ImportMoneyForwardDataCore(DateTime from, DateTime to, ILogger log) {
+			log.LogInformation($"{from:yyyy/MM/dd}から{to:yyyy/MM/dd}の期間のデータを取得します。");
 			var id = Configuration.GetValue<string>("MAIL");
 			log.LogInformation($"アカウント[{id}]の情報を取得してデータベースに保存します。");
 			var password = Configuration.GetValue<string>("PASSWORD");

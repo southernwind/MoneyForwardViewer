@@ -73,7 +73,7 @@ namespace MoneyForwardViewer.Scraper {
 		/// <returns></returns>
 		public async IAsyncEnumerable<MfAsset[]> GetAssets(DateTime from, DateTime to) {
 			await this.LoginAsync();
-			for (var date = from; date <= to; date = date.AddDays(1)) {
+			for (var date = from; date <= to.AddDays(1); date = date.AddDays(1)) {
 				var htmlDoc = await this._hcw.GetDocumentAsync($"https://moneyforward.com/bs/history/list/{date:yyyy-MM-dd}");
 				var list = htmlDoc
 					.DocumentNode
