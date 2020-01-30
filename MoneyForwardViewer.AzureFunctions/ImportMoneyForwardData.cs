@@ -27,7 +27,7 @@ namespace MoneyForwardViewer.AzureFunctions {
 		}
 
 		[FunctionName("ImportMoneyForwardData")]
-		public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log) {
+		public static async Task Run([TimerTrigger("0 0/10 * * * *")]TimerInfo myTimer, ILogger log) {
 			var to = DateTime.Now.Date;
 			var from = to.Date.AddYears(-1);
 			await ImportMoneyForwardDataCore(from, to, log);
