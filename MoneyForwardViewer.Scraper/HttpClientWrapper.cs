@@ -52,7 +52,7 @@ namespace MoneyForwardViewer.Scraper {
 		/// </summary>
 		/// <param name="url">URL</param>
 		/// <param name="content">要求本文</param>
-		public async Task PostAsync(string url, HttpContent content) {
+		public async Task<HtmlDocument> PostAsync(string url, HttpContent content) {
 			var uri = new Uri(url);
 			var request = new HttpRequestMessage {
 				Method = HttpMethod.Post,
@@ -61,9 +61,12 @@ namespace MoneyForwardViewer.Scraper {
 			};
 			this.SetHeaders(request);
 
-			request.Headers.Add("Referer", "https://moneyforward.com/users/sign_in");
 			var response = await this._hc.SendAsync(request);
-			response.EnsureSuccessStatusCode();
+			var html = await response.Content.ReadAsStringAsync();
+
+			var hd = new HtmlDocument();
+			hd.LoadHtml(html);
+			return hd;
 		}
 
 		private void SetHeaders(HttpRequestMessage request) {
@@ -71,7 +74,6 @@ namespace MoneyForwardViewer.Scraper {
 			request.Headers.Add("Accept-Language", "ja");
 			request.Headers.Add("Connection", "Keep-Alive");
 			request.Headers.Add("Accept", "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8");
-			request.Headers.Add("Host", "moneyforward.com");
 		}
 	}
 }

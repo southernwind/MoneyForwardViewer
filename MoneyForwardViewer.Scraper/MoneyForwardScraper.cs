@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 using HtmlAgilityPack.CssSelectors.NetCore;
 
@@ -95,18 +99,89 @@ namespace MoneyForwardViewer.Scraper {
 		/// ログインする。
 		/// </summary>
 		private async Task LoginAsync() {
-			var htmlDoc = await this._hcw.GetDocumentAsync("https://moneyforward.com/users/sign_in");
+			var htmlDoc = await this._hcw.GetDocumentAsync("https://moneyforward.com/cf");
+			if (!Regex.IsMatch(htmlDoc.Text, @"^.*gon\.authorizationParams=({.*?}).*$", RegexOptions.Singleline)) {
+				// ログイン済みとみなす
+				return;
+			}
+			var json = Regex.Replace(htmlDoc.Text, @"^.*gon\.authorizationParams=({.*?}).*$", "$1", RegexOptions.Singleline);
+			var urlParams = JsonSerializer.Deserialize<UrlParams>(json);
 
-			var token = htmlDoc.DocumentNode.QuerySelector(@"input[name='authenticity_token']").GetAttributeValue("value", null);
+			// メールアドレス入力画面
+			htmlDoc = await this._hcw.GetDocumentAsync("https://id.moneyforward.com/sign_in/email?" + $"client_id={Encode(urlParams.ClientId)}&nonce={Encode(urlParams.Nonce)}&redirect_uri={Encode(urlParams.RedirectUri)}&response_type={Encode(urlParams.ResponseType)}&scope={Encode(urlParams.Scope)}&state={Encode(urlParams.State)}");
 
+			json = Regex.Replace(htmlDoc.Text, @"^.*gon\.authorizationParams=({.*?}).*$", "$1", RegexOptions.Singleline);
+			urlParams = JsonSerializer.Deserialize<UrlParams>(json);
+			var token = htmlDoc.DocumentNode.QuerySelector(@"meta[name='csrf-token']").GetAttributeValue("content", null);
+
+			// パスワード入力画面
 			var content = new FormUrlEncodedContent(new Dictionary<string, string> {
-				{ "utf8", "✓"},
-				{ "authenticity_token", token },
-				{ "sign_in_session_service[email]", this._id },
-				{ "sign_in_session_service[password]", this._password },
-				{ "commit",  "ログイン"}
+				{ "authenticity_token", token},
+				{ "_method","post" },
+				{ "client_id", urlParams.ClientId},
+				{ "redirect_uri", urlParams.RedirectUri},
+				{ "response_type", urlParams.ResponseType},
+				{ "scope", urlParams.Scope},
+				{ "state", urlParams.State},
+				{ "nonce", urlParams.Nonce},
+				{ "mfid_user[email]", this._id},
+				{ "hiddenPassword","" }
 			});
-			await this._hcw.PostAsync("https://moneyforward.com/session", content);
+			htmlDoc = await this._hcw.PostAsync("https://id.moneyforward.com/sign_in/email", content);
+
+			json = Regex.Replace(htmlDoc.Text, @"^.*gon\.authorizationParams=({.*?}).*$", "$1", RegexOptions.Singleline);
+			urlParams = JsonSerializer.Deserialize<UrlParams>(json);
+			token = htmlDoc.DocumentNode.QuerySelector(@"meta[name='csrf-token']").GetAttributeValue("content", null);
+
+			content = new FormUrlEncodedContent(new Dictionary<string, string> {
+				{ "authenticity_token", token},
+				{ "_method","post" },
+				{ "client_id", urlParams.ClientId},
+				{ "redirect_uri", urlParams.RedirectUri},
+				{ "response_type", urlParams.ResponseType},
+				{ "scope", urlParams.Scope},
+				{ "state", urlParams.State},
+				{ "nonce", urlParams.Nonce},
+				{ "mfid_user[email]", this._id},
+				{ "mfid_user[password]",this._password }
+			});
+			await this._hcw.PostAsync("https://id.moneyforward.com/sign_in", content);
+		}
+
+		private static string Encode(string text) {
+			return HttpUtility.UrlEncode(text);
+		}
+		private class UrlParams {
+			[JsonPropertyName("clientId")]
+			public string ClientId {
+				get;
+				set;
+			}
+			[JsonPropertyName("redirectUri")]
+			public string RedirectUri {
+				get;
+				set;
+			}
+			[JsonPropertyName("responseType")]
+			public string ResponseType {
+				get;
+				set;
+			}
+			[JsonPropertyName("scope")]
+			public string Scope {
+				get;
+				set;
+			}
+			[JsonPropertyName("state")]
+			public string State {
+				get;
+				set;
+			}
+			[JsonPropertyName("nonce")]
+			public string Nonce {
+				get;
+				set;
+			}
 		}
 	}
 }
