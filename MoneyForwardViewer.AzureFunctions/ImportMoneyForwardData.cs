@@ -2,7 +2,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -27,10 +30,19 @@ namespace MoneyForwardViewer.AzureFunctions {
 		}
 
 		[FunctionName("ImportMoneyForwardData")]
-		public static async Task Run([TimerTrigger("0 0/10 * * * *")]TimerInfo myTimer, ILogger log) {
+		public static async Task Timer([TimerTrigger("0 0/10 * * * *")] TimerInfo myTimer, ILogger log) {
 			var to = DateTime.Now.Date;
 			var from = to.Date.AddYears(-1);
 			await ImportMoneyForwardDataCore(from, to, log);
+		}
+
+		[FunctionName("ImportMoneyForwardDataHttp")]
+		public static async Task<IActionResult> Http([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log) {
+			string from = req.Query["from"];
+			string to = req.Query["to"];
+
+			await ImportMoneyForwardDataCore(DateTime.Parse(from), DateTime.Parse(to), log);
+			return new OkObjectResult("ok");
 		}
 
 		private static async Task ImportMoneyForwardDataCore(DateTime from, DateTime to, ILogger log) {
