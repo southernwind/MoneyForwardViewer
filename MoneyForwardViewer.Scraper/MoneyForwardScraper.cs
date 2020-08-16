@@ -37,7 +37,7 @@ namespace MoneyForwardViewer.Scraper {
 		/// <returns></returns>
 		public async IAsyncEnumerable<MfTransaction[]> GetTransactions(DateTime from, DateTime to) {
 			await this.LoginAsync();
-			for (var date = from; date <= to; date = date.AddMonths(1)) {
+			for (var date = from; date <= to; date = new DateTime(date.AddMonths(1).Year, date.AddMonths(1).Month, 1)) {
 				var year = date.Year;
 				var month = date.Month;
 				this._hcw.CookieContainer.Add(new Cookie("cf_last_fetch_from_date", $"{year}/{month:D2}/01", "/",
