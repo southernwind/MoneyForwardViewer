@@ -70,7 +70,7 @@ namespace MoneyForwardViewer.Scraper {
 		}
 
 		private void SetHeaders(HttpRequestMessage request) {
-			request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363");
+			request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
 			request.Headers.Add("Accept-Language", "ja");
 			request.Headers.Add("Connection", "Keep-Alive");
 			request.Headers.Add("Accept", "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8");
